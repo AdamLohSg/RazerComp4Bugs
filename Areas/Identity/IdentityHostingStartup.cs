@@ -16,7 +16,7 @@ namespace _4Bugs.Areas.Identity
         {
             builder.ConfigureServices((context, services) => {
                 services.AddDbContext<DBContext>(options =>
-                    options.UseSqlServer(
+                    options.UseMySql(
                         context.Configuration.GetConnectionString("DBContextConnection")));
 
                 services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

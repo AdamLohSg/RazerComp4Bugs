@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 namespace _4Bugs
 {
@@ -27,12 +28,19 @@ namespace _4Bugs
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<DBContext>(options => options.UseMySQL(Configuration.GetConnectionString("DBContextConnection")));
+            services.AddDbContext<DBContext>(options => options.UseMySql(Configuration.GetConnectionString("DBContextConnection")));
             services.AddDefaultIdentity<IdentityUser>(options => 
                 options.SignIn.RequireConfirmedAccount = true).AddEntityFrameworkStores<DBContext>();
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+           /* services.AddDbContextPool<DBContext>(
+            options => options.UseMySql("server=database-1.cdnxwix1v5ty.ap-southeast-1.rds.amazonaws.com;user=FourBugs;password=PHRINrjufd0neP2fsr6Q;database=database-1;",
+                mySqlOptions =>
+                {
+                    mySqlOptions.ServerVersion(new Version(8, 0, 17), ServerType.MySql); // replace with your Server Version and Type
+                }
+        ));*/
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
