@@ -52,7 +52,7 @@ namespace FourBugs.Controllers
 
                 ViewData["Recommended"] = companyList;
                 ViewData["Bids"] = bidList;
-                ViewData["CurrentBalance"] = MambuController.getBalance("8a8e862a7217508901721e4c9b8b3717");
+                ViewData["CurrentBalance"] = MambuController.getBalance(user.SavingsAccountID);
 
                 return View();
             }
@@ -77,9 +77,9 @@ namespace FourBugs.Controllers
                 //receivedBids.Add(bid2);
                 //receivedBids.Add(bid3);
 
-                //ViewData["Resources"] = resourceList;
-                //ViewData["ReceivedBids"] = receivedBids;
-                //ViewData["CurrentBalance"] = MambuController.getBalance(user.SavingsAccountID);
+                ViewData["Resources"] = resourceList;
+                ViewData["ReceivedBids"] = receivedBids;
+                ViewData["CurrentBalance"] = MambuController.getBalance(user.SavingsAccountID);
 
 
                 return View();
@@ -97,8 +97,11 @@ namespace FourBugs.Controllers
             return Json(new { Url = "Index/Home" });
         }
 
-        public int TopUpAccount(int id, int amount)
+        public async Task<int> TopUpAccountAsync(int id, int amount)
         {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            MambuController.deposit(user.SavingsAccountID, amount);
+
             return 1;
         }
 
