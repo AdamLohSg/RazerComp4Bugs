@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using _4Bugs.Controllers;
+using _4Bugs.Models.Mambu;
+using FourBugs.Controllers;
 using FourBugs.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
@@ -20,14 +24,14 @@ namespace FourBugs.Areas.Identity.Pages.Account
     [AllowAnonymous]
     public class RegisterModel : PageModel
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
@@ -53,6 +57,16 @@ namespace FourBugs.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
+
+            [Required]
+            [RegularExpression(@"^[STFG]\d{7}[A-Z]$", ErrorMessage = "Please enter an appropriate NRIC. Alphabets in Capitals.")]
+            [Display(Name = "NRIC")]
+            public string IC { get; set; }
+
+            [Required]
+            [DataType(DataType.Date)]
+            [Display(Name = "Expiry Date")]
+            public string ExpiryDate { get; set; }
 
             [Required]
             [EmailAddress]
@@ -83,12 +97,26 @@ namespace FourBugs.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser { UserName = Input.Email, Email = Input.Email };
+                string dateString = Input.ExpiryDate;
+                IFormatProvider culture = new CultureInfo("en-US", true);
+                DateTime dateVal = DateTime.ParseExact(dateString, "yyyy-MM-dd", culture);
+
+                MambuClient mambuClientInfo = new MambuClient();
+                mambuClientInfo.client.firstName = Input.FirstName;
+                mambuClientInfo.client.lastName = Input.LastName;
+                mambuClientInfo.idDocuments[0].validUntil = dateVal.ToString("yyyy-MM-dd");
+                mambuClientInfo.idDocuments[0].documentId = Input.IC;
+
+                string clientId = MambuController.CreateMambuClient(mambuClientInfo);
+
+                string bankId = MambuController.CreateSavingsAccount(clientId);
+
+
+                var user = new ApplicationUser { MambuId = clientId, SavingsAccountID = bankId, FirstName = Input.FirstName, LastName = Input.LastName, UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
