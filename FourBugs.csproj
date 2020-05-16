@@ -8,6 +8,8 @@
   <ItemGroup>
     <Compile Remove="Data\Migrations\20200516175030_Mambu2.cs" />
     <Compile Remove="Data\Migrations\20200516175030_Mambu2.Designer.cs" />
+    <Compile Remove="Data\Migrations\20200516192824_Mambu3.cs" />
+    <Compile Remove="Data\Migrations\20200516192824_Mambu3.Designer.cs" />
   </ItemGroup>
 
   <ItemGroup>

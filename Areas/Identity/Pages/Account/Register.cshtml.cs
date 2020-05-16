@@ -65,8 +65,12 @@ namespace FourBugs.Areas.Identity.Pages.Account
 
             [Required]
             [DataType(DataType.Date)]
-            [Display(Name = "Expiry Date")]
+            [Display(Name = "Mambu Expiry Date")]
             public string ExpiryDate { get; set; }
+
+            [Required]
+            [Display(Name = "If Investor")]
+            public bool AccountRole { get; set; }
 
             [Required]
             [EmailAddress]
@@ -112,7 +116,7 @@ namespace FourBugs.Areas.Identity.Pages.Account
                 string bankId = MambuController.CreateSavingsAccount(clientId);
 
 
-                var user = new ApplicationUser { MambuId = clientId, SavingsAccountID = bankId, FirstName = Input.FirstName, LastName = Input.LastName, UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { AccountRoles = Input.AccountRole, MambuId = clientId, SavingsAccountID = bankId, FirstName = Input.FirstName, LastName = Input.LastName, UserName = Input.Email, Email = Input.Email };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {

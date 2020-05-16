@@ -34,6 +34,8 @@ namespace FourBugs.Model
         public string LastName { get; set; }
         public string ValidUntil { get; set; }
         public string DocumentID { get; set; }
+        public bool AccountRoles { get; set; }
+
 
         public virtual ICollection<AspNetUserClaims> AspNetUserClaims { get; set; }
         public virtual ICollection<AspNetUserLogins> AspNetUserLogins { get; set; }
