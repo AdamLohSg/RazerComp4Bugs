@@ -1,8 +1,123 @@
-﻿@{
+﻿@*@model IEnumerable<_4Bugs.Models.Project>*@
+@using _4Bugs.Models;
+@{
     ViewData["Title"] = "Home Page";
+    List<Project> projectList = ViewData["Recommended"] as List<Project>;
+    List<Bid> bidList = ViewData["Bids"] as List<Bid>;
 }
+<style>
+    .profilePic {
+        border-radius: 50%;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    #welcomeText {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #txtAccBalance {
+        color: green;
+    }
+
+    i.far {
+        display: inline-block;
+        border-radius: 60px;
+        box-shadow: 0px 0px 2px #888;
+        padding: 0.5em 0.6em;
+    }
+
+    .description{
+        font-style: italic;
+        color: grey;
+        font-size: 10px;
+    }
+
+    div.textRow{
+        padding: 0px;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-12" style="margin-bottom: 10px;">
+        <div style="float:left">
+            <img class="profilePic" src="~/images/img_avatar.png" alt="Avatar" style="width:100px"><text id="welcomeText">Welcome Adam!</text>
+        </div>
+
+        <div style="float: right;">
+            Your Account Balance: <text id="txtAccBalance">$3000.00</text>
+            <a href="https://www.dbs.com.sg/index/default.page">
+                <img id="imgTopUp" src="~/images/top_up.png" alt="Top-Up" title="Top-up Balance" style="width:50px">
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="col-md-12" style="padding:0px; padding-bottom: 15px">
+            Your current bids
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Business Name</th>
+                    <th scope="col">Bid Price</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bid in bidList)
+                {
+                <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 20px; padding-right: 0px">
+                    <td>@bid.Name</td>
+                    <td style="color: green">$@bid.BidPrice</td>
+                    <td>
+                        @if (@bid.Status == null)
+                        {
+                            <text>Pending</text>
+                        }
+                        else
+                        {
+                            @if (bid.Status == true)
+                            {
+                                <span style="color: green">Accepted!</span>
+                            }
+                            else
+                            {
+                                <span style="color: red">Rejected</span>
+                            }
+                        }
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-5">
+        <div class="col-md-12" style="padding:0px">
+            Recommended for you
+        </div>
+        <table style="display: inline-block; border-spacing: 0 15px; border-collapse:separate;">
+            @foreach (var project in projectList)
+            {
+                <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 20px; padding-right: 0px">
+                    <td style="padding-right: 10px"><img class="businessImages" src=@project.Image title="@project.Name" style="width:200px"></td>
+                    <td>
+                        <div class="textRow col-md-12"><text>@project.Name</text></div>
+                        <div class="textRow col-md-12"><text style="color: green">@project.NumBids bids</text></div>
+                        <div class="textRow description col-md-12" style="text-overflow: ellipsis;white-space: nowrap; overflow: hidden;width: 300px;">
+                            <span class="description" title="@project.CompanyName" style="vertical-align: top;">@project.CompanyName</span>
+                        </div>
+                        <br />
+                        <i class="far fa-bookmark"></i>
+                        <i class="far fa-thumbs-up"></i>
+                        <i class="far fa-thumbs-down"></i>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
 </div>
