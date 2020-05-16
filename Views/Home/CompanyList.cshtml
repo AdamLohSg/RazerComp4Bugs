@@ -67,7 +67,7 @@
                             <i class="far fa-bookmark"></i>
                         </div>
                         <div class="col-md-12" style="padding: 0px">
-                            <button type="button" data-id="@company.Name" class="open-BidDialog btn btn-success" onclick="submitConfirmation()" data-toggle="modal" data-target="#exampleModalCenter">Bid for this company</button>
+                            <button type="button" data-id="@company.Name" class="open-BidDialog btn btn-success" data-toggle="modal" data-target="#exampleModalCenter">Bid for this company</button>
                         </div>
                     </td>
                 </tr>
@@ -109,17 +109,22 @@
 
 <script type="text/javascript">
 
-    function topUpAccount() {
-        var companyName = $.trim($("#companyName").val());
-        var bidAmount = $.trim($("#bidAmount").val());
+    function submitBid() {
+        var companyName = $.trim($("#companyName").text());
+        var amount = $.trim($("#bidAmount").val());
         var equity = $.trim($("#equity").val());
-        var url1 = '@Url.Action("SubmitBid", "Home", new { id = "-1", amount = "-2", equity = "-3" })';
+
+        console.log($.trim($("#bidAmount").val()))
+        console.log($.trim($("#bidAmount").val()))
+        var url1 = '@Url.Action("SubmitBid", "Home", new { companyName = "-1", amount = "-2", equity = "-3" })';
         url1 = url1.replace("-1", companyName);
         url1 = url1.replace("-2", bidAmount);
         url1 = url1.replace("-3", equity);
+        var arrayOfData = { companyName, amount, equity };
 
         $.ajax({
-            url: url1,
+            url: '@Url.Action("SubmitBid", "Home")',
+            data: { companyName, amount, equity },
             type: 'GET',
             success: function (result) {
                 alert("success");

@@ -152,20 +152,17 @@
                         <td>@bid.CompanyName</td>
                         <td style="color: green">$@bid.BidPrice</td>
                         <td>
-                            @if (@bid.Status == null)
+                            @if (@bid.Status == "Pending")
                             {
-                                <text>Pending</text>
+                                <span style="color: blue">Pending</span>
+                            }
+                            else if (bid.Status == "Accepted")
+                            {
+                                <span style="color: green">Accepted!</span>
                             }
                             else
                             {
-                                @if (bid.Status == true)
-                                {
-                                    <span style="color: green">Accepted!</span>
-                                }
-                                else
-                                {
-                                    <span style="color: red">Rejected</span>
-                                }
+                                <span style="color: red">Rejected</span>
                             }
                         </td>
                     </tr>

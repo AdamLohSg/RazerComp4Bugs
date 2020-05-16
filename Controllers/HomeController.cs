@@ -11,6 +11,7 @@ using _4Bugs.Controllers;
 using Microsoft.AspNetCore.Identity;
 using FourBugs.Data;
 using FourBugs.Model;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace FourBugs.Controllers
 {
@@ -32,7 +33,7 @@ namespace FourBugs.Controllers
             if (!isAuthenticated)
                 Response.Redirect("/Identity/Account/login");
 
-            bool investor = true;
+            
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (investor)
             {
@@ -58,24 +59,6 @@ namespace FourBugs.Controllers
             }
             else
             {
-                //List<Resource> resourceList = new List<Resource>();
-                //List<Bid> receivedBids = new List<Bid>();
-
-                //Resource res1 = new Resource(1, "Business Grants Portal", "/images/businessGrantPortal.jpg", "https://www.businessgrants.gov.sg/", "Business Grants Portal brings government grants for businesses into one place, so it’s easier to find and apply for the grants you need.");
-                //Resource res2 = new Resource(1, "IMDA", "/images/imda.png", "https://www.imda.gov.sg/programme-listing/smes-go-digital", "The SMEs Go Digital programme aims to help SMEs use digital technologies and build stronger digital capabilities to seize growth opportunities in the digital economy. Building on the foundation of Enhanced iSPRINT, SMEs Go Digital has a more structured and inclusive approach towards the adoption of digital technologies by SMEs.");
-                //Resource res3 = new Resource(1, "Enterprise Singapore", "/images/enterpriseSG.jpg", "https://www.enterprisesg.gov.sg/", "Enterprise Singapore is the government agency championing enterprise development. We work with committed companies to build capabilities, innovate and internationalise. We also support the growth of Singapore as a hub for global trading and startups. As the national standards and accreditation body, we continue to build trust in Singapore’s products and services through quality and standards.");
-
-                //resourceList.Add(res1);
-                //resourceList.Add(res2);
-                //resourceList.Add(res3);
-
-                //Bid bid1 = new Bid(1, "John", 100000, 30);
-                //Bid bid2 = new Bid(2, "Warren", 500000, 5);
-                //Bid bid3 = new Bid(3, "Bill", 750000, 10);
-
-                //receivedBids.Add(bid1);
-                //receivedBids.Add(bid2);
-                //receivedBids.Add(bid3);
 
                 ViewData["Resources"] = _context.Resources.ToList();
                 ViewData["ReceivedBids"] = _context.Bid.Where(s => s.BidderId == user.Id).ToList();
@@ -88,12 +71,24 @@ namespace FourBugs.Controllers
 
         public async Task<IActionResult> ConfirmBid(int? id)
         {
-            //Bid currentBid = new Bid(1, "WineCompany", 100000, 30, "John");
+            Bid currentBid = _context.Bid.Where(b => b.Id == id).First();
             return View();
         }
 
-        public JsonResult SubmitConfirmBid(int id)
+        public JsonResult SubmitConfirmBid(int id, int companyId)
         {
+            Bid currentBid = _context.Bid.Where(b => b.Id == id).First();
+            currentBid.Status = "Accepted";
+            _context.Bid.Update(currentBid);
+            _context.SaveChanges();
+
+            List<Bid> bidList = _context.Bid.Where(b => b.Id != id && b.CompanyId == companyId).ToList<Bid>();
+            foreach(var b in bidList)
+            {
+                b.Status = "Rejected";
+                _context.Bid.Update(b);
+            }
+            _context.SaveChanges();
             return Json(new { Url = "Index/Home" });
         }
 
@@ -105,9 +100,9 @@ namespace FourBugs.Controllers
             return 1;
         }
 
-        public IActionResult CompanyList()
+        public async Task<IActionResult> CompanyList()
         {
-
+            var user = await _userManager.GetUserAsync(HttpContext.User);
             var companies = from c in _context.Company
                             select c;
             List<Company> companyList = companies.ToList<Company>();
@@ -116,13 +111,26 @@ namespace FourBugs.Controllers
                 c.NumBids = _context.Bid.Where(b => b.CompanyId == c.Id).Count();
             }
 
+            List<Bid> bidList = _context.Bid.Where(b => b.BidderId == user.Id).ToList<Bid>();
+
+            foreach(var b in bidList)
+            {
+                companyList.RemoveAll(x => x.Id == b.CompanyId);
+            }
+
             ViewData["Companies"] = companyList;
 
             return View();
         }
 
-        public int SubmitBid(int id, int amount, int equity)
+        public async Task<int> SubmitBid(string companyName, string amount, string equity)
         {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            int companyId = _context.Company.Where(c => c.Name == companyName).Select(c => c.Id).First();
+            Bid b = new Bid(user.Id, Convert.ToInt32(amount), Convert.ToInt32(equity), companyId, "Pending");
+            _context.Bid.Add(b);
+            _context.SaveChanges();
+
             return 1;
         }
 

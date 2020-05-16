@@ -12,12 +12,12 @@ namespace FourBugs.Models
         public int BidPrice { get; set; }
         public int EquityOffered { get; set; }
         public int CompanyId { get; set; }
-        public bool? Status { get; set; }
+        public string Status { get; set; }
         public string CompanyName { get; set; }
 
 
 
-        public Bid(int Id, string BidderId, int BidPrice, int EquityOffered, int CompanyId, bool? Status)
+        public Bid(int Id, string BidderId, int BidPrice, int EquityOffered, int CompanyId, string Status)
         {
             this.Id = Id;
             this.BidderId = BidderId;
@@ -26,5 +26,15 @@ namespace FourBugs.Models
             this.CompanyId = CompanyId;
             this.Status = Status;
         }
+
+        public Bid(string BidderId, int BidPrice, int EquityOffered, int CompanyId, string Status)
+        {
+            this.BidderId = BidderId;
+            this.BidPrice = BidPrice;
+            this.EquityOffered = EquityOffered;
+            this.CompanyId = CompanyId;
+            this.Status = Status;
+        }
+
     }
 }
