@@ -120,5 +120,19 @@ namespace _4Bugs.Controllers
             return bal;
         }
 
+        public static string getBalance(string account_id)
+        {
+            var client = new RestClient(baseUrl);
+            client.Authenticator = new HttpBasicAuthenticator(Helper.MAMBU_LOGIN, Helper.MAMBU_PASSWORD);
+            var request = new RestRequest("/savings/" + account_id + "/?", Method.GET);
+
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return null;
+            var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            String bal = obj["balance"];
+            return bal;
+        }
+
     }
 }
