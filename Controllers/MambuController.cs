@@ -59,7 +59,6 @@ namespace _4Bugs.Controllers
                 return null;
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             String client_id = obj["client"]["encodedKey"];
-            //Save Client ID to USER
             return client_id;
         }  
         public static string CreateSavingsAccount(string client_id)
@@ -79,8 +78,46 @@ namespace _4Bugs.Controllers
                 return null;
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             String accountID = obj["savingsAccount"]["encodedKey"];
-            //Save to AccountID
             return accountID;
+        }
+
+        public static string deposit(string account_id, long amount)
+        {
+            Deposit dep = new Deposit();
+            dep.amount = amount;
+           
+            var client = new RestClient(baseUrl);
+            client.Authenticator = new HttpBasicAuthenticator(Helper.MAMBU_LOGIN, Helper.MAMBU_PASSWORD);
+            var request = new RestRequest("/savings/" + account_id +"/transactions", Method.POST);
+            request.AddJsonBody(dep);
+
+
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return null;
+            var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            String bal = obj["balance"];
+            return bal;
+        }
+
+        public static string transfer(string origin_account, string dest_account, long amount)
+        {
+            Transfer transfer = new Transfer();
+            transfer.amount = amount;
+            transfer.toSavingsAccount = dest_account;
+
+            var client = new RestClient(baseUrl);
+            client.Authenticator = new HttpBasicAuthenticator(Helper.MAMBU_LOGIN, Helper.MAMBU_PASSWORD);
+            var request = new RestRequest("/savings/" + origin_account + "/transactions", Method.POST);
+            request.AddJsonBody(transfer);
+
+
+            IRestResponse response = client.Execute(request);
+            if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                return null;
+            var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
+            String bal = obj["balance"];
+            return bal;
         }
 
     }
