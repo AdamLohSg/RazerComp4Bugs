@@ -14,6 +14,7 @@ namespace FourBugs.Models
         public string Description { get; set; }
         public string ImageUrl { get; set; }
         public int NumBids { get; set; }
+        public string UserId { get; set; }
 
 
         public Company(int Id, string Name, string Uen, string Description, string ImageUrl, int NumBids)

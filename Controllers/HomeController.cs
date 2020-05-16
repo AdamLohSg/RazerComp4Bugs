@@ -31,10 +31,14 @@ namespace FourBugs.Controllers
         {
             bool isAuthenticated = User.Identity.IsAuthenticated;
             if (!isAuthenticated)
-                Response.Redirect("/Identity/Account/login");
+            {
+                return Redirect("/Identity/Account/login");
+            }
+
 
             
             var user = await _userManager.GetUserAsync(HttpContext.User);
+            bool investor = user.AccountRoles;
             if (investor)
             {
 
