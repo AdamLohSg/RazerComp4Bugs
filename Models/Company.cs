@@ -16,22 +16,14 @@ namespace FourBugs.Models
         public int NumBids { get; set; }
 
 
-        public Company(int Id, string Name, int NumBids, string ImageUrl, string Description)
-        {
-            this.Id = Id;
-            this.Name = Name;
-            this.NumBids = NumBids;
-            this.ImageUrl = ImageUrl;
-            this.Description = Description;
-        }
-
-        public Company(int Id, string Name, string Uen, string Description, string ImageUrl)
+        public Company(int Id, string Name, string Uen, string Description, string ImageUrl, int NumBids)
         {
             this.Id = Id;
             this.Name = Name;
             this.Uen = Uen;
             this.Description = Description;
             this.ImageUrl = ImageUrl;
+            this.NumBids = NumBids;
         }
     }
 }

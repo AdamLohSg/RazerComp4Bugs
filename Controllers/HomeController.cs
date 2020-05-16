@@ -28,29 +28,25 @@ namespace FourBugs.Controllers
 
         public async Task<IActionResult> IndexAsync()
         {
+            bool isAuthenticated = User.Identity.IsAuthenticated;
+            if (!isAuthenticated)
+                Response.Redirect("/Identity/Account/login");
+
             bool investor = true;
             var user = await _userManager.GetUserAsync(HttpContext.User);
-            
             if (investor)
             {
-                List<Company> companyList = new List<Company>();
-                List<Bid> bidList = new List<Bid>();
 
-                Company company1 = new Company(1, "Tech Company", 3, "/images/business1.jpg", "Company specializing in AI technologies");
-                Company company2 = new Company(2, "Money Company", 4, "/images/business2.jpg", "Specializing in cloud technologies, our aim is to reach the moon. And beat elon musk to mars");
-                Company company3 = new Company(3, "Music Company", 4, "/images/business3.jpg", "Specializing in music, bringing music around the world");
+                var companies = from c in _context.Company
+                                select c;
+                List<Company> companyList = companies.ToList<Company>();
 
-                companyList.Add(company1);
-                companyList.Add(company2);
-                companyList.Add(company3);
+                List<Bid> bidList = _context.Bid.Where(b => b.BidderId == user.Id).ToList<Bid>();
 
-                Bid bid1 = new Bid(1, "Alcohol Company", 100000, true);
-                Bid bid2 = new Bid(2, "Farm Company", 500000, null);
-                Bid bid3 = new Bid(3, "Data Company", 750000, false);
-
-                bidList.Add(bid1);
-                bidList.Add(bid2);
-                bidList.Add(bid3);
+                foreach (var b in bidList)
+                {
+                    b.CompanyName = _context.Company.Where(c => c.Id == b.CompanyId).Select(c => c.Name).FirstOrDefault();
+                }
 
 
 
@@ -62,28 +58,28 @@ namespace FourBugs.Controllers
             }
             else
             {
-                List<Resource> resourceList = new List<Resource>();
-                List<Bid> receivedBids = new List<Bid>();
+                //List<Resource> resourceList = new List<Resource>();
+                //List<Bid> receivedBids = new List<Bid>();
 
-                Resource res1 = new Resource(1, "Business Grants Portal", "/images/businessGrantPortal.jpg", "https://www.businessgrants.gov.sg/", "Business Grants Portal brings government grants for businesses into one place, so it’s easier to find and apply for the grants you need.");
-                Resource res2 = new Resource(1, "IMDA", "/images/imda.png", "https://www.imda.gov.sg/programme-listing/smes-go-digital", "The SMEs Go Digital programme aims to help SMEs use digital technologies and build stronger digital capabilities to seize growth opportunities in the digital economy. Building on the foundation of Enhanced iSPRINT, SMEs Go Digital has a more structured and inclusive approach towards the adoption of digital technologies by SMEs.");
-                Resource res3 = new Resource(1, "Enterprise Singapore", "/images/enterpriseSG.jpg", "https://www.enterprisesg.gov.sg/", "Enterprise Singapore is the government agency championing enterprise development. We work with committed companies to build capabilities, innovate and internationalise. We also support the growth of Singapore as a hub for global trading and startups. As the national standards and accreditation body, we continue to build trust in Singapore’s products and services through quality and standards.");
+                //Resource res1 = new Resource(1, "Business Grants Portal", "/images/businessGrantPortal.jpg", "https://www.businessgrants.gov.sg/", "Business Grants Portal brings government grants for businesses into one place, so it’s easier to find and apply for the grants you need.");
+                //Resource res2 = new Resource(1, "IMDA", "/images/imda.png", "https://www.imda.gov.sg/programme-listing/smes-go-digital", "The SMEs Go Digital programme aims to help SMEs use digital technologies and build stronger digital capabilities to seize growth opportunities in the digital economy. Building on the foundation of Enhanced iSPRINT, SMEs Go Digital has a more structured and inclusive approach towards the adoption of digital technologies by SMEs.");
+                //Resource res3 = new Resource(1, "Enterprise Singapore", "/images/enterpriseSG.jpg", "https://www.enterprisesg.gov.sg/", "Enterprise Singapore is the government agency championing enterprise development. We work with committed companies to build capabilities, innovate and internationalise. We also support the growth of Singapore as a hub for global trading and startups. As the national standards and accreditation body, we continue to build trust in Singapore’s products and services through quality and standards.");
 
-                resourceList.Add(res1);
-                resourceList.Add(res2);
-                resourceList.Add(res3);
+                //resourceList.Add(res1);
+                //resourceList.Add(res2);
+                //resourceList.Add(res3);
 
-                Bid bid1 = new Bid(1, "John", 100000, 30);
-                Bid bid2 = new Bid(2, "Warren", 500000, 5);
-                Bid bid3 = new Bid(3, "Bill", 750000, 10);
+                //Bid bid1 = new Bid(1, "John", 100000, 30);
+                //Bid bid2 = new Bid(2, "Warren", 500000, 5);
+                //Bid bid3 = new Bid(3, "Bill", 750000, 10);
 
-                receivedBids.Add(bid1);
-                receivedBids.Add(bid2);
-                receivedBids.Add(bid3);
+                //receivedBids.Add(bid1);
+                //receivedBids.Add(bid2);
+                //receivedBids.Add(bid3);
 
-                ViewData["Resources"] = resourceList;
-                ViewData["ReceivedBids"] = receivedBids;
-                ViewData["CurrentBalance"] = MambuController.getBalance("8a8e862a7217508901721e4c9b8b3717");
+                //ViewData["Resources"] = resourceList;
+                //ViewData["ReceivedBids"] = receivedBids;
+                //ViewData["CurrentBalance"] = MambuController.getBalance(user.SavingsAccountID);
 
 
                 return View();
@@ -92,7 +88,7 @@ namespace FourBugs.Controllers
 
         public async Task<IActionResult> ConfirmBid(int? id)
         {
-            Bid currentBid = new Bid(1, "WineCompany", 100000, 30, "John");
+            //Bid currentBid = new Bid(1, "WineCompany", 100000, 30, "John");
             return View(currentBid);
         }
 
@@ -108,15 +104,14 @@ namespace FourBugs.Controllers
 
         public IActionResult CompanyList()
         {
-            List<Company> companyList = new List<Company>();
 
-            Company company1 = new Company(1, "Tech Company", 3, "/images/business1.jpg", "Company specializing in AI technologies");
-            Company company2 = new Company(2, "Money Company", 4, "/images/business2.jpg", "Specializing in cloud technologies, our aim is to reach the moon. And beat elon musk to mars");
-            Company company3 = new Company(3, "Music Company", 4, "/images/business3.jpg", "Specializing in music, bringing music around the world");
-
-            companyList.Add(company1);
-            companyList.Add(company2);
-            companyList.Add(company3);
+            var companies = from c in _context.Company
+                            select c;
+            List<Company> companyList = companies.ToList<Company>();
+            foreach (var c in companyList)
+            {
+                c.NumBids = _context.Bid.Where(b => b.CompanyId == c.Id).Count();
+            }
 
             ViewData["Companies"] = companyList;
 
