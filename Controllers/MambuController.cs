@@ -26,15 +26,15 @@ namespace _4Bugs.Controllers
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             return obj["encodedKey"];
         }
-        public static string CreateMambuClient()
+        public static string CreateMambuClient(MambuClient mambuClientInfo)
         {
-            MambuClient mambuClientInfo = new MambuClient();
 
-           /*Testing data
-            *mambuClientInfo.client.firstName = "Blah";
-            mambuClientInfo.client.lastName = "Blah";
-            mambuClientInfo.idDocuments[0].validUntil = "2022-02-01";
-            mambuClientInfo.idDocuments[0].documentId = "S9812345A";*/
+            //Testing data
+            //MambuClient mambuClientInfo = new MambuClient();
+            /* mambuClientInfo.client.firstName = "Blah";
+             mambuClientInfo.client.lastName = "Blah";
+             mambuClientInfo.idDocuments[0].validUntil = "2022-02-01";
+             mambuClientInfo.idDocuments[0].documentId = "S9812345A";*/
 
             mambuClientInfo.idDocuments[0].identificationDocumentTemplateKey = "8a8e867271bd280c0171bf7e4ec71b01"; //Hardcode dis shiz so everyone can verify by NRIC
             mambuClientInfo.idDocuments[0].documentType = "NRIC/Passport Number";
@@ -59,20 +59,24 @@ namespace _4Bugs.Controllers
                 return null;
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             String client_id = obj["client"]["encodedKey"];
+            CreateSavingsAccount(client_id); //Create wallet for this user
             //Save Client ID to USER
             return client_id;
         }  
-        public static string CreateSavingsAccount(string clinetKey)
+        public static string CreateSavingsAccount(string client_id)
         {
-            savingsAccount accountDetails = new savingsAccount();
+            SavingsAccount accountDetails = new SavingsAccount();
             accountDetails.overdraftInterestSettings.interestRate = 5; // Changeable field in the future
             accountDetails.interestSettings.interestRate = "1.25";
-
+            accountDetails.accountHolderKey = client_id;
             var client = new RestClient(baseUrl);
             client.Authenticator = new HttpBasicAuthenticator(Helper.MAMBU_LOGIN, Helper.MAMBU_PASSWORD);
             var request = new RestRequest("/savings/", Method.POST);
 
-            request.AddJsonBody(accountDetails);
+
+            var serializedBody = JsonConvert.SerializeObject(accountDetails);
+
+            request.AddJsonBody(new { savingsAccount = accountDetails });
 
 
             IRestResponse response = client.Execute(request);

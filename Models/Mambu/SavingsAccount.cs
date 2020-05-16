@@ -2,14 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 
 namespace _4Bugs.Models.Mambu
 {
-    public class savingsAccount
+ 
+    [DataContract(Name = "savingsAccount")]
+    public class SavingsAccount
        
     {
-        public savingsAccount()
+        public SavingsAccount()
         {
             name = "Digital Account";
             accountHolderType = "CLIENT";
