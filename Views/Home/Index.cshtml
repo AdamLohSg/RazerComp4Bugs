@@ -5,6 +5,8 @@
     List<Bid> bidList = ViewData["Bids"] as List<Bid>;
     List<Resource> resourceList = ViewData["Resources"] as List<Resource>;
     List<Bid> receivedBids = ViewData["ReceivedBids"] as List<Bid>;
+    string balance = ViewData["CurrentBalance"] as string;
+
 }
 
 <style>
@@ -122,7 +124,7 @@
         </div>
 
         <div style="float: right;">
-            Your Account Balance: <text id="txtAccBalance">$3000.00</text>
+            Your Account Balance: <text id="txtAccBalance">$@balance</text>
             <a href="" data-toggle="modal" data-target="#exampleModalCenter">
                 <img id="imgTopUp" src="~/images/top_up.png" alt="Top-Up" title="Top-up Balance" style="width:50px">
             </a>

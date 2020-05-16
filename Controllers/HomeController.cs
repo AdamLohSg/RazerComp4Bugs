@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using FourBugs.Models;
 using System.Runtime.InteropServices.WindowsRuntime;
+using _4Bugs.Controllers;
 
 namespace FourBugs.Controllers
 {
@@ -48,6 +49,7 @@ namespace FourBugs.Controllers
 
                 ViewData["Recommended"] = companyList;
                 ViewData["Bids"] = bidList;
+                ViewData["CurrentBalance"] = MambuController.getBalance("8a8e862a7217508901721e4c9b8b3717");
 
                 return View();
             }
@@ -74,6 +76,8 @@ namespace FourBugs.Controllers
 
                 ViewData["Resources"] = resourceList;
                 ViewData["ReceivedBids"] = receivedBids;
+                ViewData["CurrentBalance"] = MambuController.getBalance("8a8e862a7217508901721e4c9b8b3717");
+
 
                 return View();
             }
