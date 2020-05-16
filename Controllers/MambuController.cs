@@ -26,7 +26,7 @@ namespace _4Bugs.Controllers
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             return obj["encodedKey"];
         }
-        public static string CreateMambuClient(MambuClient mambuClientInfo)
+        public static string CreateMambuClient(MambuClient mambuClientInfo, string aspId)
         {
 
             //Testing data
@@ -59,11 +59,11 @@ namespace _4Bugs.Controllers
                 return null;
             var obj = JsonConvert.DeserializeObject<dynamic>(response.Content);
             String client_id = obj["client"]["encodedKey"];
-            CreateSavingsAccount(client_id); //Create wallet for this user
+            CreateSavingsAccount(client_id, aspId); //Create wallet for this user
             //Save Client ID to USER
             return client_id;
         }  
-        public static string CreateSavingsAccount(string client_id)
+        public static string CreateSavingsAccount(string client_id, string aspId)
         {
             SavingsAccount accountDetails = new SavingsAccount();
             accountDetails.overdraftInterestSettings.interestRate = 5; // Changeable field in the future
@@ -72,10 +72,6 @@ namespace _4Bugs.Controllers
             var client = new RestClient(baseUrl);
             client.Authenticator = new HttpBasicAuthenticator(Helper.MAMBU_LOGIN, Helper.MAMBU_PASSWORD);
             var request = new RestRequest("/savings/", Method.POST);
-
-
-            var serializedBody = JsonConvert.SerializeObject(accountDetails);
-
             request.AddJsonBody(new { savingsAccount = accountDetails });
 
 
