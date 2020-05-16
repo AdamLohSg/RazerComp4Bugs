@@ -1,6 +1,6 @@
 using System;
 
-namespace _4Bugs.Models
+namespace FourBugs.Models
 {
     public class ErrorViewModel
     {
