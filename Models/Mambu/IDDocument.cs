@@ -9,22 +9,20 @@ namespace _4Bugs.Models.Mambu
 {
     public class IDDocument
     {
-        [JsonProperty("encodedKey")]
-        public string EncodedKey { get; set; }
 
         [JsonProperty("documentType")]
-        public string DocumentType { get; set; }
+        public string documentType { get; set; }
 
         [JsonProperty("issuingAuthority")]
-        public string IssuingAuthority { get; set; }
+        public string issuingAuthority { get; set; }
 
-        [JsonProperty("documentIdTemplate")]
-        public string DocumentIdTemplate { get; set; }
-
-        [JsonProperty("mandatoryForClients")]
-        public bool MandatoryForClients { get; set; }
-
-        [JsonProperty("allowAttachments")]
-        public bool AllowAttachments { get; set; }
+        [JsonProperty("identificationDocumentTemplateKey")]
+        public string identificationDocumentTemplateKey { get; set; }
+        //Validation Date  NEEDED
+        [JsonProperty("validUntil")]
+        public string validUntil { get; set; }
+        //NRIC NEEDED
+        [JsonProperty("documentId")]
+        public string documentId { get; set; }
     }
 }
