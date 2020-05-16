@@ -8,22 +8,29 @@ using Microsoft.Extensions.Logging;
 using FourBugs.Models;
 using System.Runtime.InteropServices.WindowsRuntime;
 using _4Bugs.Controllers;
+using Microsoft.AspNetCore.Identity;
+using FourBugs.Data;
+using FourBugs.Model;
 
 namespace FourBugs.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext _context;
+        public HomeController(ILogger<HomeController> logger, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _logger = logger;
+            _userManager = userManager;
+            _context = context;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
             bool investor = true;
-
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            
             if (investor)
             {
                 List<Company> companyList = new List<Company>();
