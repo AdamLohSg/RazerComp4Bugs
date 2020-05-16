@@ -77,8 +77,8 @@ namespace FourBugs.Controllers
                 //receivedBids.Add(bid2);
                 //receivedBids.Add(bid3);
 
-                ViewData["Resources"] = resourceList;
-                ViewData["ReceivedBids"] = receivedBids;
+                ViewData["Resources"] = _context.Resources.ToList();
+                ViewData["ReceivedBids"] = _context.Bid.Where(s => s.BidderId == user.Id).ToList();
                 ViewData["CurrentBalance"] = MambuController.getBalance(user.SavingsAccountID);
 
 
@@ -89,7 +89,7 @@ namespace FourBugs.Controllers
         public async Task<IActionResult> ConfirmBid(int? id)
         {
             //Bid currentBid = new Bid(1, "WineCompany", 100000, 30, "John");
-            return View(currentBid);
+            return View();
         }
 
         public JsonResult SubmitConfirmBid(int id)

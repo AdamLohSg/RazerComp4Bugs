@@ -16,6 +16,8 @@ namespace FourBugs.Data
 
         }
         public DbSet<Company> Company { get; set; }
+        public DbSet<Resource> Resources { get; set; }
+
         public DbSet<Bid> Bid { get; set; }
     }
 }
