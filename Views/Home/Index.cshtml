@@ -1,13 +1,246 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
-
+﻿@using FourBugs.Models;
 @{
-    @using _4Bugs.Controllers
-   // MambuController.getBalance("8a8e862a7217508901721e4c9b8b3717");
+    ViewData["Title"] = "Home Page";
+    List<Company> companyList = ViewData["Recommended"] as List<Company>;
+    List<Bid> bidList = ViewData["Bids"] as List<Bid>;
+    List<Resource> resourceList = ViewData["Resources"] as List<Resource>;
+    List<Bid> receivedBids = ViewData["ReceivedBids"] as List<Bid>;
+    string balance = ViewData["CurrentBalance"] as string;
+
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<style>
+    .profilePic {
+        border-radius: 50%;
+    }
+
+    #welcomeText {
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    #txtAccBalance {
+        color: green;
+    }
+
+    i.far {
+        display: inline-block;
+        border-radius: 60px;
+        box-shadow: 0px 0px 2px #888;
+        padding: 0.5em 0.6em;
+    }
+
+    .description {
+        font-style: italic;
+        color: grey;
+        font-size: 10px;
+    }
+
+    div.textRow {
+        padding: 0px;
+    }
+
+    .longDescription {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+
+@*<div class="row">
+        <div class="col-md-12" style="margin-bottom: 10px;">
+            <div style="float:left">
+                <img class="profilePic" src="~/images/img_avatar.png" alt="Avatar" style="width:100px; padding-right: 10px"><text id="welcomeText">Welcome Adam!</text>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-7">
+            <div class="col-md-12" style="padding:0px; padding-bottom: 15px">
+                Your current bids
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th scope="col">Bidder Name</th>
+                        <th scope="col">Bid Price</th>
+                        <th scope="col">Asking equity</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var bid in receivedBids)
+                    {
+                        <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 20px; padding-right: 0px">
+                            <td>@bid.Name</td>
+                            <td style="color: green">$@bid.BidPrice</td>
+                            <td>@bid.EquityOffered %</td>
+                            <td>
+                                <button type="button" class="btn btn-success" onclick="@("window.location.href='" + @Url.Action("ConfirmBid", "Home", new { id = bid.Id }) + "'");">Accept</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-5">
+            <div class="col-md-12" style="padding:0px">
+                Resources for you
+            </div>
+            <table style="display: inline-block; border-spacing: 0 15px; border-collapse:collapse;">
+                @foreach (var resource in resourceList)
+                {
+                    <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 30px; padding-right: 0px">
+                        <td style="padding-right: 10px; padding-bottom:10px"><img class="businessImages" src=@resource.ImgUrl title="@resource.OrgName" style="width:150px"></td>
+                        <td style="padding-bottom:10px">
+                            <div class="textRow col-md-12">
+                                <a href="@resource.SiteUrl">
+                                    <text>@resource.OrgName</text>
+                                </a>
+                            </div>
+                            <div class="longDescription description">
+                                <span title="@resource.Description">@resource.Description</span>
+                            </div>
+                            <br />
+                            <i class="far fa-bookmark"></i>
+                            <i class="far fa-thumbs-up"></i>
+                            <i class="far fa-thumbs-down"></i>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+    </div>*@
+
+
+<div class="row">
+    <div class="col-md-12" style="margin-bottom: 10px;">
+        <div style="float:left">
+            <img class="profilePic" src="~/images/img_avatar.png" alt="Avatar" style="width:100px"><text id="welcomeText">Welcome Adam!</text>
+        </div>
+
+        <div style="float: right;">
+            Your Account Balance: <text id="txtAccBalance">$@balance</text>
+            <a href="" data-toggle="modal" data-target="#exampleModalCenter">
+                <img id="imgTopUp" src="~/images/top_up.png" alt="Top-Up" title="Top-up Balance" style="width:50px">
+            </a>
+        </div>
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-md-7">
+        <div class="col-md-12" style="padding:0px; padding-bottom: 15px">
+            Your current bids
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">Business Name</th>
+                    <th scope="col">Bid Price</th>
+                    <th scope="col">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var bid in bidList)
+                {
+                    <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 20px; padding-right: 0px">
+                        <td>@bid.CompanyName</td>
+                        <td style="color: green">$@bid.BidPrice</td>
+                        <td>
+                            @if (@bid.Status == null)
+                            {
+                                <text>Pending</text>
+                            }
+                            else
+                            {
+                                @if (bid.Status == true)
+                                {
+                                    <span style="color: green">Accepted!</span>
+                                }
+                                else
+                                {
+                                    <span style="color: red">Rejected</span>
+                                }
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="col-md-5">
+        <div class="col-md-12" style="padding:0px">
+            Recommended for you
+        </div>
+        <table style="display: inline-block; border-spacing: 0 15px; border-collapse:separate;">
+            @foreach (var company in companyList)
+            {
+                <tr class="col-md-12" style="border-bottom: 1px solid grey; padding-bottom: 20px; padding-right: 0px">
+                    <td style="padding-right: 10px"><img class="businessImages" src=@company.ImageUrl title="@company.Name" style="width:200px"></td>
+                    <td>
+                        <div class="textRow col-md-12"><text>@company.Name</text></div>
+                        <div class="textRow col-md-12"><text style="color: green">@company.NumBids bids</text></div>
+                        <div class="textRow description col-md-12" style="text-overflow: ellipsis;white-space: nowrap; overflow: hidden;width: 300px;">
+                            <span class="description" title="@company.Description" style="vertical-align: top;">@company.Description</span>
+                        </div>
+                        <br />
+                        <i class="far fa-bookmark"></i>
+                        <i class="far fa-thumbs-up"></i>
+                        <i class="far fa-thumbs-down"></i>
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Top-up Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table>
+                    <tr>
+                        <td>Top-up Amount:</td>
+                        <td><textarea id="amount" rows="1" style="resize: none;"></textarea></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="topUpAccount()">Top-Up!</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function topUpAccount() {
+        var myAmount = $.trim($("#amount").val());
+        var url1 = '@Url.Action("TopUpAccount", "Home", new { id = 1, amount = "-1" })';
+        url1 = url1.replace("-1", myAmount);
+
+        $.ajax({
+            url: url1,
+            type: 'GET',
+            success: function (result) {
+                alert("success");
+                window.location.href = "/";
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+</script>

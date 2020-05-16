@@ -1,0 +1,53 @@
+﻿@model FourBugs.Models.Bid
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+    <h4>Bid offer</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Bidder's Name
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.CompanyName)
+        </dd>
+        <dt class="col-sm-2">
+            Bid Price
+        </dt>
+        <dd class="col-sm-10">
+            $@Html.DisplayFor(model => model.BidPrice)
+        </dd>
+        <dt class="col-sm-2">
+            Asking equity
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.EquityOffered) %
+        </dd>
+        <dt class="col-sm-2">
+        </dt>
+        <dd class="col-sm-10">
+            @*<button type="button" class="btn btn-success" onclick="@("window.location.href='" + @Url.Action("SubmitConfirmBid", "Home", new { id = Model.Id }) + "'");">Accept</button>*@
+            <button type="button" class="btn btn-success" onclick="submitConfirmation()">Accept</button>
+        </dd>
+    </dl>
+</div>
+
+<script type="text/javascript">
+    function submitConfirmation() {
+        var url1 = '@Url.Action("SubmitConfirmBid", "Home", new { id = Model.Id })';
+        $.ajax({
+            url: url1,
+            type: 'GET',
+            success: function (result) {
+                alert("success");
+                window.location.href = "/";
+            },
+            error: function () {
+                alert("error");
+            }
+        });
+    }
+</script>
